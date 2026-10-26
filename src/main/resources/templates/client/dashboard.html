@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body class="app" data-idle="300">
+<div th:replace="~{fragments/layout :: bg}"></div>
+<div th:replace="~{fragments/layout :: toast}"></div>
+<div class="shell">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="page">
+        <header th:replace="~{fragments/layout :: topbar('Dashboard', |Welcome ${me.firstName}|)}"></header>
+        <div class="dash-wrap">
+        <section th:replace="~{fragments/stats :: boxes('corner')}"></section>
+        <section th:replace="~{fragments/table :: dashPanel(${tickets}, false, false)}"></section>
+        </div>
+    </main>
+</div>
+<div th:replace="~{fragments/modals :: submitTicket}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Four live status boxes. Each one opens the ticket table filtered by that status. footStyle = 'corner' (client, agent) or 'text' (admin). -->
+<section th:fragment="boxes(footStyle)" class="stat-grid" th:classappend="${footStyle == 'corner'} ? 'two'">
+    <a class="stat-card c-sky" href="/tickets?status=OPEN" data-show="OPEN">
+        <span class="sc-ico"><i class="fa-solid fa-envelope-open"></i></span>
+        <span class="sc-view" th:if="${footStyle == 'corner'}">View</span>
+        <b class="sc-num" th:text="${stats['Open']}">0</b>
+        <span class="sc-label">Open</span>
+        <span class="sc-arrow" th:if="${footStyle == 'corner'}"><i class="fa-solid fa-arrow-down"></i></span>
+        <span class="sc-foot" th:if="${footStyle == 'text'}">View tickets <i class="fa-solid fa-arrow-down"></i></span>
+    </a>
+    <a class="stat-card c-amber" href="/tickets?status=IN_PROGRESS" data-show="IN_PROGRESS">
+        <span class="sc-ico"><i class="fa-solid fa-gears"></i></span>
+        <span class="sc-view" th:if="${footStyle == 'corner'}">View</span>
+        <b class="sc-num" th:text="${stats['In Progress']}">0</b>
+        <span class="sc-label">In Progress</span>
+        <span class="sc-arrow" th:if="${footStyle == 'corner'}"><i class="fa-solid fa-arrow-down"></i></span>
+        <span class="sc-foot" th:if="${footStyle == 'text'}">View tickets <i class="fa-solid fa-arrow-down"></i></span>
+    </a>
+    <a class="stat-card c-cyan" href="/tickets?status=RESOLVED" data-show="RESOLVED">
+        <span class="sc-ico"><i class="fa-solid fa-circle-check"></i></span>
+        <span class="sc-view" th:if="${footStyle == 'corner'}">View</span>
+        <b class="sc-num" th:text="${stats['Resolved']}">0</b>
+        <span class="sc-label">Resolved</span>
+        <span class="sc-arrow" th:if="${footStyle == 'corner'}"><i class="fa-solid fa-arrow-down"></i></span>
+        <span class="sc-foot" th:if="${footStyle == 'text'}">View tickets <i class="fa-solid fa-arrow-down"></i></span>
+    </a>
+    <a class="stat-card c-purple" href="/tickets?status=CLOSED" data-show="CLOSED">
+        <span class="sc-ico"><i class="fa-solid fa-box-archive"></i></span>
+        <span class="sc-view" th:if="${footStyle == 'corner'}">View</span>
+        <b class="sc-num" th:text="${stats['Closed']}">0</b>
+        <span class="sc-label">Closed</span>
+        <span class="sc-arrow" th:if="${footStyle == 'corner'}"><i class="fa-solid fa-arrow-down"></i></span>
+        <span class="sc-foot" th:if="${footStyle == 'text'}">View tickets <i class="fa-solid fa-arrow-down"></i></span>
+    </a>
+</section>
+
+</body>
+</html>

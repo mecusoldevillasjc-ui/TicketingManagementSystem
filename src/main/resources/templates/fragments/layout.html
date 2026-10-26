@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - Ticketing Management System'">Ticketing Management System</title>
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+    <script>
+        document.documentElement.classList.add('js');
+        try { document.documentElement.dataset.theme = localStorage.getItem('tms-theme') || 'dark'; } catch (e) { document.documentElement.dataset.theme = 'dark'; }
+    </script>
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/figma.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div th:fragment="bg" class="orbs" aria-hidden="true"><i class="o1"></i><i class="o2"></i><i class="o3"></i></div>
+
+<aside th:fragment="sidebar" class="sidebar glass">
+    <a class="brand" th:href="${me.homePath}">
+        <img class="brand-logo" src="/img/logo-mark.png" alt="Ticketing Management System logo">
+        <span class="brand-name">Ticketing Management System</span>
+    </a>
+    <nav>
+        <a class="nav-link" th:href="${me.homePath}" th:classappend="${path == me.homePath} ? 'active'">
+            <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+        <a class="nav-link" href="/tickets" th:classappend="${path == '/tickets' or path.startsWith('/tickets/')} ? 'active'">
+            <i class="fa-solid fa-list-check"></i><span th:text="${me.client ? 'My tickets' : (me.admin ? 'All tickets' : 'Ticket queue')}">Tickets</span></a>
+        <a class="nav-link" th:if="${me.admin}" href="/admin/users" th:classappend="${path == '/admin/users'} ? 'active'">
+            <i class="fa-solid fa-users"></i><span>Users</span></a>
+        <a class="nav-link" th:if="${me.admin}" href="/admin/reports" th:classappend="${path == '/admin/reports'} ? 'active'">
+            <i class="fa-solid fa-chart-simple"></i><span>Reports</span></a>
+        <a class="nav-link" href="/profile" th:classappend="${path == '/profile'} ? 'active'">
+            <i class="fa-solid fa-user-pen"></i><span>Profile</span></a>
+    </nav>
+    <div class="side-foot">
+        <button type="button" class="nav-link" id="themeToggle" aria-label="Switch light or dark theme"><i class="fa-solid fa-moon"></i></button>
+        <form id="logoutForm" th:action="@{/logout}" method="post">
+            <button class="nav-link" type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Sign out</span></button>
+        </form>
+    </div>
+</aside>
+
+<header th:fragment="topbar(title, sub)" class="topbar">
+    <div class="tb-left">
+        <button type="button" class="nav-toggle" id="navToggle" aria-label="Open or close the menu"><i class="fa-solid fa-bars"></i></button>
+        <div>
+            <h1 th:text="${title}">Title</h1>
+            <p th:text="${sub}">Subtitle</p>
+        </div>
+    </div>
+    <button type="button" class="btn primary" th:if="${me.client and (path == '/client/dashboard' or path == '/tickets')}" data-modal="submitModal">
+        <i class="fa-solid fa-plus"></i>Submit a Ticket</button>
+</header>
+
+<div th:fragment="toast" th:if="${toast != null}" class="toast" th:classappend="${toastType == 'error'} ? 'err' : 'ok'" role="status">
+    <i class="fa-solid" th:classappend="${toastType == 'error'} ? 'fa-circle-exclamation' : 'fa-circle-check'"></i>
+    <span th:text="${toast}">Message</span>
+</div>
+
+<th:block th:fragment="scripts"><script src="/js/app.js"></script></th:block>
+
+</body>
+</html>

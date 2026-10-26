@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Support made simple')}"></head>
+<body class="pub">
+<div th:replace="~{fragments/layout :: bg}"></div>
+<header th:replace="~{fragments/public :: nav('home')}"></header>
+
+<main class="pub-main">
+    <div class="wrap">
+
+        <!-- Hero -->
+        <section class="hero">
+            <div>
+                <span class="eyebrow">SUBMIT &middot; TRACK &middot; RESOLVE</span>
+                <h1>Every request <em>tracked</em> from first report to final fix.</h1>
+                <p class="lead">One place to report a problem, see who is handling it, and know when it is solved. No lost emails, no chasing people for updates.</p>
+                <div class="hero-cta">
+                    <a class="btn primary lg" href="/login"><i class="fa-solid fa-right-to-bracket"></i>Log in to submit</a>
+                    <a class="btn lg" href="/kiosk"><i class="fa-solid fa-display"></i>Use the kiosk</a>
+                </div>
+                <form class="track-inline" action="/track" method="get">
+                    <input class="input" name="code" placeholder="Have a ticket number? e.g. TCK-0042" aria-label="Ticket number" autocomplete="off">
+                    <button class="btn" type="submit">Track</button>
+                </form>
+                <p class="hint-line">No account needed to check progress.</p>
+            </div>
+
+            <div class="hero-card">
+                <div class="hc-head"><b>Support overview</b><span class="live"><i></i>Live</span></div>
+                <div class="hc-stats">
+                    <div class="hc-stat"><b th:attr="data-count=${total}">0</b><span>Tickets handled</span></div>
+                    <div class="hc-stat"><b th:attr="data-count=${solved}">0</b><span>Solved</span></div>
+                    <div class="hc-stat"><b th:attr="data-count=${avgHours},data-dec=1">0</b><span>Avg hours to solve</span></div>
+                </div>
+                <div class="mini-ticket"><i class="fa-solid fa-computer" style="color:var(--brand)"></i>
+                    <div><b>Printer offline, Room 204</b><small>Example ticket</small></div><span class="chip st-in-progress">In Progress</span></div>
+                <div class="track" style="--p:66.666%">
+                    <div class="track-line"><i></i></div>
+                    <div class="step done"><span class="dot"><i class="fa-solid fa-check"></i></span><span>Open</span></div>
+                    <div class="step done"><span class="dot"><i class="fa-solid fa-check"></i></span><span>In Progress</span></div>
+                    <div class="step done current"><span class="dot"><i class="fa-solid fa-check"></i></span><span>Resolved</span></div>
+                    <div class="step"><span class="dot"><i class="fa-solid fa-check"></i></span><span>Closed</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How it works -->
+        <section class="section" id="how">
+            <div class="head reveal">
+                <h2>How it works</h2>
+                <p class="sub">Three steps, and you can see where things stand at every one of them.</p>
+            </div>
+            <div class="steps3">
+                <article class="pcard reveal"><span class="num">01</span><h3>Submit</h3><p>Choose a category, say how urgent it is, and describe the problem. Sign in on the web portal, or walk up to the kiosk.</p></article>
+                <article class="pcard reveal"><span class="num">02</span><h3>Get assigned</h3><p>Urgent tickets go to the top of the queue. An agent takes it, and you can see who is handling your request.</p></article>
+                <article class="pcard reveal"><span class="num">03</span><h3>Resolve and rate</h3><p>Follow the progress, reply to the agent, then confirm it is solved and rate the help you received.</p></article>
+            </div>
+        </section>
+
+        <!-- Roles -->
+        <section class="section" id="roles">
+            <div class="head reveal">
+                <h2>Built for everyone involved</h2>
+                <p class="sub">Each person gets the tools for their job and nothing more.</p>
+            </div>
+            <div class="aud">
+                <article class="pcard reveal"><span class="ico"><i class="fa-solid fa-user"></i></span><h3>Clients</h3>
+                    <p>Report problems and follow them without asking for updates.</p>
+                    <ul><li><i class="fa-solid fa-check"></i>Submit and categorize tickets</li><li><i class="fa-solid fa-check"></i>Live progress tracker</li><li><i class="fa-solid fa-check"></i>Reply to agents, rate the result</li></ul></article>
+                <article class="pcard reveal"><span class="ico"><i class="fa-solid fa-headset"></i></span><h3>Support agents</h3>
+                    <p>A work queue that puts the most urgent tickets first.</p>
+                    <ul><li><i class="fa-solid fa-check"></i>Priority-sorted queue</li><li><i class="fa-solid fa-check"></i>Take, update and resolve tickets</li><li><i class="fa-solid fa-check"></i>Private internal notes</li></ul></article>
+                <article class="pcard reveal"><span class="ico"><i class="fa-solid fa-chart-pie"></i></span><h3>Administrators</h3>
+                    <p>See how the team is doing and where problems keep coming from.</p>
+                    <ul><li><i class="fa-solid fa-check"></i>Workload and performance reports</li><li><i class="fa-solid fa-check"></i>Recurring problem categories</li><li><i class="fa-solid fa-check"></i>User and role management</li></ul></article>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section">
+            <div class="head reveal">
+                <h2>What you get</h2>
+            </div>
+            <div class="feat-grid">
+                <article class="pcard reveal"><span class="ico"><i class="fa-solid fa-display"></i></span><h3>Walk-up kiosk</h3><p>A big, touch-friendly screen where anyone can report a problem in four taps, no account needed.</p></article>
+                <article class="pcard reveal"><span class="ico"><i class="fa-solid fa-bolt"></i></span><h3>Priority and service targets</h3><p>High, medium and low urgency, with a clear flag when a ticket takes longer than its target.</p></article>
+                <article class="pcard reveal"><span class="ico"><i class="fa-solid fa-lock"></i></span><h3>Secure by design</h3><p>Hashed passwords, role-based access, and protection against forged form submissions.</p></article>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="section" id="faq">
+            <div class="head reveal"><h2>Questions</h2></div>
+            <div class="faq reveal">
+                <details><summary>Do I need an account to report a problem?<i class="fa-solid fa-plus"></i></summary>
+                    <p>Not at the kiosk: anyone can submit there. On the web portal you create a free client account, which lets you see all your tickets in one place.</p></details>
+                <details><summary>How do I check on a ticket?<i class="fa-solid fa-plus"></i></summary>
+                    <p>Use "Track a ticket" and enter your ticket number (for example TCK-0042). You will see its progress. Private details stay hidden unless you sign in.</p></details>
+                <details><summary>Who can see my ticket?<i class="fa-solid fa-plus"></i></summary>
+                    <p>You and the support team. Other clients can never see your tickets.</p></details>
+                <details><summary>What do the priorities mean?<i class="fa-solid fa-plus"></i></summary>
+                    <p>High means you cannot work, medium means it slows you down, and low means it can wait. Higher priorities have shorter service targets.</p></details>
+            </div>
+        </section>
+
+        <!-- Final call to action -->
+        <section class="section" style="padding-top:20px">
+            <div class="band reveal">
+                <div>
+                    <h2>Ready to get something fixed?</h2>
+                    <p>Log in to submit a ticket, or use the kiosk if you are on site.</p>
+                    <div class="hero-cta" style="margin-bottom:0">
+                        <a class="btn primary" href="/login">Log in</a>
+                        <a class="btn" href="/register">Create an account</a>
+                    </div>
+                </div>
+                <div class="logo-card"><img src="/img/logo.jpg" alt="Ticketing Management System: submit, track, resolve"></div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/public :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<header th:fragment="nav(active)" class="pub-nav">
+    <a class="brand" href="/">
+        <img class="brand-logo" src="/img/logo-mark.png" alt="Ticketing Management System logo">
+        <span class="brand-name">Ticketing Management System</span>
+    </a>
+    <nav class="pub-links" aria-label="Main">
+        <a href="/#how">How it works</a>
+        <a href="/#roles">Who it is for</a>
+        <a href="/#faq">FAQ</a>
+        <a href="/track" th:classappend="${active == 'track'} ? 'active'">Track a ticket</a>
+        <a href="/kiosk" th:classappend="${active == 'kiosk'} ? 'active'">Kiosk</a>
+    </nav>
+    <div class="pub-actions">
+        <button type="button" class="icon-btn" id="themeToggle" aria-label="Switch light or dark theme"><i class="fa-solid fa-moon"></i></button>
+        <th:block th:if="${me != null}">
+            <a class="btn primary" th:href="${me.homePath}"><i class="fa-solid fa-gauge-high"></i>Go to dashboard</a>
+        </th:block>
+        <th:block th:unless="${me != null}">
+            <a class="btn ghost-hide" href="/register">Register</a>
+            <a class="btn primary" href="/login"><i class="fa-solid fa-right-to-bracket"></i>Log in</a>
+        </th:block>
+    </div>
+</header>
+
+<footer th:fragment="footer" class="pub-foot">
+    <span>Ticketing Management System &middot; BSIT 2-7 project</span>
+    <span><a href="/track">Track a ticket</a> &nbsp;&nbsp; <a href="/kiosk">Kiosk</a> &nbsp;&nbsp; <a href="/login">Log in</a></span>
+</footer>
+
+</body>
+</html>

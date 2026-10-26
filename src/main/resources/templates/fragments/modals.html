@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Submit a ticket (clients). Posts to the same /tickets endpoint as before. -->
+<dialog th:fragment="submitTicket" class="modal" id="submitModal" aria-labelledby="submitTitle">
+    <div class="modal-box">
+        <div class="modal-head">
+            <h2 id="submitTitle">Submit a ticket</h2>
+            <button type="button" class="modal-x" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form class="modal-body" th:action="@{/tickets}" method="post">
+            <div class="form-2">
+                <div class="field">
+                    <label for="mCategory">Category</label>
+                    <select class="select" id="mCategory" name="category" required>
+                        <option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.label}">Category</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="mPriority">How urgent is it?</label>
+                    <select class="select" id="mPriority" name="priority" required>
+                        <option value="LOW">Low: it can wait</option>
+                        <option value="MEDIUM" selected>Medium: it slows me down</option>
+                        <option value="HIGH">High: I can't work</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field">
+                <label for="mSubject">Subject</label>
+                <input class="input" id="mSubject" name="subject" maxlength="120" required placeholder="Example: Printer in Room 204 shows offline">
+            </div>
+            <div class="field">
+                <label for="mDesc">Details</label>
+                <textarea class="textarea" id="mDesc" name="description" maxlength="2000" required placeholder="What happened?"></textarea>
+            </div>
+            <button class="btn primary" type="submit"><i class="fa-solid fa-paper-plane"></i>Submit ticket</button>
+        </form>
+    </div>
+</dialog>
+
+</body>
+</html>

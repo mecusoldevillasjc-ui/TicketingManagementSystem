@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Ticket')}"></head>
+<body class="app" th:attr="data-idle=${me.client ? 300 : 0}">
+<div th:replace="~{fragments/layout :: bg}"></div>
+<div th:replace="~{fragments/layout :: toast}"></div>
+<div class="shell">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="page">
+        <header th:replace="~{fragments/layout :: topbar(${ticket.subject}, |${ticket.ticketCode} opened by ${ticket.requesterLabel} ${ticket.ago}|)}"></header>
+
+        <div class="detail stagger">
+            <div class="col">
+                <section class="card">
+                    <div class="card-head">
+                        <h3>Progress</h3>
+                        <span class="row">
+                            <span class="chip warn" th:if="${ticket.overdue}"><i class="fa-solid fa-clock"></i>Past service target</span>
+                            <span class="chip" th:classappend="'st-' + ${ticket.statusKey}" th:text="${ticket.statusLabel}">Open</span>
+                        </span>
+                    </div>
+                    <div th:replace="~{fragments/ticket :: track(${ticket})}"></div>
+                </section>
+
+                <section class="card">
+                    <div class="card-head"><h3>Description</h3></div>
+                    <p class="desc" th:text="${ticket.description}">Details</p>
+                </section>
+
+                <section class="card">
+                    <div class="card-head"><h3>Conversation</h3></div>
+                    <div class="thread">
+                        <th:block th:each="c : ${comments}">
+                            <div class="sys" th:if="${c.systemEvent}">
+                                <b th:text="${c.authorName}">Someone</b>
+                                <span th:text="${c.message}">did something</span>
+                                <span th:text="${c.ago}">now</span>
+                            </div>
+                            <div class="msg" th:unless="${c.systemEvent}" th:classappend="${c.author != null and c.author.id == me.id} ? 'mine'">
+                                <span class="avatar sm" th:text="${c.authorInitials}">AB</span>
+                                <div class="bubble" th:classappend="${c.internalNote} ? 'internal'">
+                                    <header>
+                                        <b th:text="${c.authorName}">Name</b>
+                                        <small th:text="${c.ago}">now</small>
+                                        <span class="chip st-in-progress" th:if="${c.internalNote}">Internal note</span>
+                                    </header>
+                                    <p th:text="${c.message}">Message</p>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+
+                    <form class="composer" th:if="${ticket.status.name() != 'CLOSED'}" th:action="@{/tickets/{id}/comment(id=${ticket.id})}" method="post">
+                        <textarea class="textarea" name="message" maxlength="2000" required placeholder="Write a reply"></textarea>
+                        <div class="row between">
+                            <label class="pill" th:unless="${me.client}"><input type="checkbox" name="internal" value="true"><span><i class="fa-solid fa-lock"></i>Internal note (client can't see it)</span></label>
+                            <span th:if="${me.client}"></span>
+                            <button class="btn primary" type="submit"><i class="fa-solid fa-paper-plane"></i>Send reply</button>
+                        </div>
+                    </form>
+                    <p class="hint" th:if="${ticket.status.name() == 'CLOSED'}">This ticket is closed, so replies are turned off.</p>
+                </section>
+            </div>
+
+            <aside class="meta">
+                <dl>
+                    <div><dt>Requester</dt><dd><span class="avatar sm" th:text="${ticket.requesterInitials}">AB</span><span th:text="${ticket.requesterLabel}">Name</span></dd></div>
+                    <div th:unless="${me.client}"><dt>Contact</dt><dd th:text="${ticket.requesterContactLabel}">email</dd></div>
+                    <div><dt>Category</dt><dd><i class="fa-solid" th:classappend="${ticket.categoryIcon}"></i><span th:text="${ticket.categoryLabel}">Hardware</span></dd></div>
+                    <div><dt>Priority</dt><dd><span class="chip" th:classappend="'pr-' + ${ticket.priorityKey}" th:text="${ticket.priorityLabel}">High</span></dd></div>
+                    <div><dt>Handled by</dt><dd th:text="${ticket.assignedTo != null} ? ${ticket.assignedTo.fullName} : 'Not assigned yet'">Agent</dd></div>
+                    <div><dt>Submitted via</dt><dd th:text="${ticket.sourceLabel}">Web portal</dd></div>
+                    <div><dt>Opened</dt><dd th:text="${ticket.createdLabel}">Date</dd></div>
+                    <div th:if="${ticket.resolvedAt != null}"><dt>Resolved</dt><dd th:text="${ticket.resolvedLabel}">Date</dd></div>
+                    <div th:if="${ticket.satisfactionRating != null}"><dt>Client rating</dt><dd><span class="stars" th:text="${'★'.repeat(ticket.satisfactionRating)}">★</span></dd></div>
+                </dl>
+
+                <div class="actions" th:if="${canClientAct}">
+                    <h4>Is this solved?</h4>
+                    <form th:action="@{/tickets/{id}/status(id=${ticket.id})}" method="post">
+                        <p class="hint">How was the help you received?</p>
+                        <div class="star-pick">
+                            <input type="radio" id="s5" name="rating" value="5"><label for="s5" title="Excellent">&#9733;</label>
+                            <input type="radio" id="s4" name="rating" value="4"><label for="s4" title="Good">&#9733;</label>
+                            <input type="radio" id="s3" name="rating" value="3"><label for="s3" title="Okay">&#9733;</label>
+                            <input type="radio" id="s2" name="rating" value="2"><label for="s2" title="Poor">&#9733;</label>
+                            <input type="radio" id="s1" name="rating" value="1"><label for="s1" title="Bad">&#9733;</label>
+                        </div>
+                        <div class="btn-stack">
+                            <button class="btn primary sm" name="status" value="CLOSED" type="submit">Yes, close it</button>
+                            <button class="btn sm" name="status" value="OPEN" type="submit">Not yet, reopen</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="actions" th:if="${canManage}">
+                    <h4>Change status</h4>
+                    <form th:action="@{/tickets/{id}/status(id=${ticket.id})}" method="post" class="btn-stack">
+                        <button th:each="s : ${statuses}" th:if="${s != ticket.status}" class="btn sm" name="status" th:value="${s.name()}" th:text="${s.label}" type="submit">Status</button>
+                    </form>
+                </div>
+
+                <div class="actions" th:if="${me.agent and ticket.assignedTo == null}">
+                    <h4>Ownership</h4>
+                    <form th:action="@{/tickets/{id}/assign(id=${ticket.id})}" method="post">
+                        <input type="hidden" name="assigneeId" th:value="${me.id}">
+                        <button class="btn primary sm" type="submit"><i class="fa-solid fa-hand"></i>Take this ticket</button>
+                    </form>
+                </div>
+
+                <div class="actions" th:if="${me.admin}">
+                    <h4>Assign to an agent</h4>
+                    <form th:action="@{/tickets/{id}/assign(id=${ticket.id})}" method="post">
+                        <div class="field">
+                            <select class="select" name="assigneeId" aria-label="Agent">
+                                <option value="">Back to the queue</option>
+                                <option th:each="a : ${agents}" th:value="${a.id}" th:text="${a.fullName}" th:selected="${ticket.assignedTo != null and ticket.assignedTo.id == a.id}">Agent</option>
+                            </select>
+                        </div>
+                        <button class="btn sm" type="submit">Save assignment</button>
+                    </form>
+                </div>
+            </aside>
+        </div>
+    </main>
+</div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

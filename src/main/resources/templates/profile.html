@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Profile')}"></head>
+<body class="app" th:attr="data-idle=${me.client ? 300 : 0}">
+<div th:replace="~{fragments/layout :: bg}"></div>
+<div th:replace="~{fragments/layout :: toast}"></div>
+<div class="shell">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="page">
+        <header th:replace="~{fragments/layout :: topbar('Profile', ${me.admin ? 'Manage your administrator account.' : 'Ticketing Management System'})}"></header>
+
+        <div class="pf-stack">
+            <section class="card flush">
+                <div class="card-head">
+                    <div>
+                        <h3 th:text="${me.admin ? 'Administrator profile' : 'Personal information'}">Personal information</h3>
+                        <small th:text="${me.admin ? 'Update your account information.' : 'Review and update your account details.'}">Review and update your account details.</small>
+                    </div>
+                </div>
+                <form class="pf-body" th:action="@{/profile}" method="post">
+                    <div class="who" th:unless="${me.admin}">
+                        <span class="avatar" th:text="${me.initials}">AB</span>
+                        <div><b th:text="${me.fullName}">Name</b><small th:text="${me.email}">email</small></div>
+                    </div>
+                    <div class="form-2">
+                        <div class="field"><label for="fullName">Full name</label><input class="input" id="fullName" name="fullName" th:value="${me.fullName}" maxlength="80" required></div>
+                        <div class="field"><label for="email">Email address</label><input class="input" id="email" name="email" type="email" th:value="${me.email}" required></div>
+                        <div class="field"><label for="phone">Phone number</label><input class="input" id="phone" name="phone" type="tel" th:value="${me.phone}" maxlength="30" placeholder="+63 900 000 0000"></div>
+                        <div class="field"><label for="role">Account role</label><input class="input" id="role" th:value="${me.roleDisplay}" readonly></div>
+                    </div>
+                    <button class="btn primary" type="submit">Save changes</button>
+                </form>
+            </section>
+
+            <section class="card flush">
+                <div class="card-head">
+                    <div><h3>Change password</h3><small>Use a strong password you do not use elsewhere.</small></div>
+                </div>
+                <form class="pf-body" th:action="@{/profile/password}" method="post">
+                    <div class="field"><label for="current">Current password</label><input class="input" id="current" name="current" type="password" required autocomplete="current-password"></div>
+                    <div class="form-2">
+                        <div class="field"><label for="password">New password</label><input class="input" id="password" name="password" type="password" minlength="6" required autocomplete="new-password"></div>
+                        <div class="field"><label for="confirm">Confirm new password</label><input class="input" id="confirm" name="confirm" type="password" minlength="6" required autocomplete="new-password"></div>
+                    </div>
+                    <button class="btn primary" type="submit">Update password</button>
+                </form>
+            </section>
+        </div>
+    </main>
+</div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

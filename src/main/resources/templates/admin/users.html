@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Users')}"></head>
+<body class="app">
+<div th:replace="~{fragments/layout :: bg}"></div>
+<div th:replace="~{fragments/layout :: toast}"></div>
+<div class="shell">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="page">
+        <header th:replace="~{fragments/layout :: topbar('Users', 'Create accounts, set roles and switch access on or off.')}"></header>
+
+        <div class="grid stagger">
+            <section class="card temp-pass" th:if="${tempPassword != null}">
+                <i class="fa-solid fa-key" style="color:var(--amber);font-size:22px"></i>
+                <div><b th:text="|New temporary password for ${tempFor}|">Temporary password</b>
+                    <p class="hint">Share it privately. It is shown only once, so copy it now.</p></div>
+                <code th:text="${tempPassword}">Tms-000000</code>
+                <button class="btn sm" type="button" th:attr="data-copy=${tempPassword}"><i class="fa-regular fa-copy"></i>Copy</button>
+            </section>
+
+            <section class="card">
+                <div class="card-head"><h3>Add an account</h3></div>
+                <form th:action="@{/admin/users}" method="post" class="row" style="align-items:flex-end">
+                    <div class="field" style="flex:1;min-width:180px;margin:0"><label for="fullName">Full name</label><input class="input" id="fullName" name="fullName" required maxlength="80"></div>
+                    <div class="field" style="flex:1;min-width:200px;margin:0"><label for="email">Email</label><input class="input" id="email" name="email" type="email" required></div>
+                    <div class="field" style="flex:1;min-width:160px;margin:0"><label for="password">Password</label><input class="input" id="password" name="password" type="password" minlength="6" required autocomplete="new-password"></div>
+                    <div class="field" style="min-width:130px;margin:0"><label for="role">Role</label>
+                        <select class="select" id="role" name="role"><option th:each="r : ${roles}" th:value="${r.name()}" th:text="${#strings.capitalize(r.name().toLowerCase())}" th:selected="${r.name() == 'AGENT'}">Agent</option></select></div>
+                    <button class="btn primary" type="submit"><i class="fa-solid fa-user-plus"></i>Create</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <div class="card-head"><h3>All accounts</h3><small th:text="${userList.size()} + ' total'">0 total</small></div>
+                <div class="tbl-wrap">
+                    <table class="tbl">
+                        <thead><tr><th>Person</th><th>Role</th><th>Access</th><th>Created</th><th>Actions</th></tr></thead>
+                        <tbody>
+                        <tr th:each="u : ${userList}">
+                            <td><div class="who"><span class="avatar sm" th:text="${u.initials}">AB</span><div><b th:text="${u.fullName}">Name</b><small th:text="${u.email}">email</small></div></div></td>
+                            <td>
+                                <form th:action="@{/admin/users/{id}/role(id=${u.id})}" method="post">
+                                    <select class="select sm" name="role" data-autosubmit aria-label="Role" th:disabled="${u.id == me.id}">
+                                        <option th:each="r : ${roles}" th:value="${r.name()}" th:text="${#strings.capitalize(r.name().toLowerCase())}" th:selected="${r == u.role}">Role</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td><span class="chip" th:classappend="${u.active} ? 'st-resolved' : 'pr-high'" th:text="${u.active} ? 'Active' : 'Deactivated'">Active</span></td>
+                            <td th:text="${u.createdLabel}">Date</td>
+                            <td>
+                                <div class="acts" th:unless="${u.id == me.id}">
+                                    <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post" th:attr="data-confirm=${u.active ? 'Deactivate ' + u.fullName + '? They will be signed out.' : 'Let ' + u.fullName + ' sign in again?'}">
+                                        <button class="btn sm" type="submit" th:text="${u.active} ? 'Deactivate' : 'Reactivate'">Toggle</button>
+                                    </form>
+                                    <form th:action="@{/admin/users/{id}/reset(id=${u.id})}" method="post" th:attr="data-confirm='Create a new temporary password for ' + ${u.fullName} + '?'">
+                                        <button class="btn sm" type="submit">Reset password</button>
+                                    </form>
+                                </div>
+                                <span class="hint" th:if="${u.id == me.id}">This is you</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

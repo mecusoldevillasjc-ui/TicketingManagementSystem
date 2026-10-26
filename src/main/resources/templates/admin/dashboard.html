@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Dashboard')}"></head>
+<body class="app">
+<div th:replace="~{fragments/layout :: bg}"></div>
+<div th:replace="~{fragments/layout :: toast}"></div>
+<div class="shell">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="page">
+        <header th:replace="~{fragments/layout :: topbar('Operations overview', 'A simple overview of ticket status and recent requests.')}"></header>
+ 
+        <div class="dash-wrap">
+        <section th:replace="~{fragments/stats :: boxes('corner')}"></section>
+        <section th:replace="~{fragments/table :: dashPanel(${tickets}, true, true)}"></section>
+        </div>
+ 
+    </main>
+</div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

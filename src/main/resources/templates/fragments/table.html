@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- The ticket table used by every role. Sorting, search and paging are added by app.js when it sits inside [data-dt]. -->
+<table th:fragment="tickets(items, showRequester)" class="dtable">
+    <thead>
+        <tr>
+            <th data-sort>Ticket</th>
+            <th data-sort th:if="${showRequester}">Requester</th>
+            <th data-sort>Category</th>
+            <th data-sort>Priority</th>
+            <th data-sort>Status</th>
+            <th data-sort>Assigned to</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="t : ${items}"
+            th:attr="data-status=${t.status.name()},data-search=${(t.ticketCode + ' ' + t.subject + ' ' + t.requesterLabel + ' ' + t.categoryLabel + ' ' + t.assigneeLabel).toLowerCase()}">
+            <td th:attr="data-v=${t.createdEpoch}">
+                <div class="t-main">
+                    <b th:text="${t.subject}">Subject</b>
+                    <small><span class="t-code" th:text="${t.ticketCode}">TCK-0001</span> &middot; <span th:text="${t.createdShort}">Oct 1, 2026</span></small>
+                </div>
+            </td>
+            <td th:if="${showRequester}" th:text="${t.requesterLabel}">Requester</td>
+            <td th:text="${t.categoryLabel}">Hardware</td>
+            <td th:attr="data-v=${t.priorityRank}"><span class="chip" th:classappend="'pr-' + ${t.priorityKey}" th:text="${t.priorityLabel}">High</span></td>
+            <td th:attr="data-v=${t.step}"><span class="chip" th:classappend="'st-' + ${t.statusKey}" th:text="${t.statusLabel}">Open</span></td>
+            <td th:text="${t.assigneeLabel}">Unassigned</td>
+            <td><a class="link-view" th:href="@{/tickets/{id}(id=${t.id})}">View</a></td>
+        </tr>
+    </tbody>
+</table>
+
+<!--
+  The table that appears right under the four status boxes on every dashboard.
+  JS (app.js, "dashboard" block) shows the rows of the box that was clicked.
+  staff  = true adds Requester, Priority and Assigned to columns
+  latest = true (admin) shows the 5 newest tickets until a box is clicked
+-->
+<section th:fragment="dashPanel(items, staff, latest)" class="inline gap-top" data-inline th:attr="data-latest=${latest}">
+    <div class="inline-empty" data-inline-empty>Select a status box above to view its tickets.</div>
+
+    <div class="card flush" data-inline-panel hidden>
+        <div class="card-head">
+            <div><h3 data-inline-title>Latest tickets</h3><small data-inline-count></small></div>
+            <span class="chip" data-inline-chip hidden></span>
+            <a class="btn tint" data-inline-all href="/tickets">View all tickets</a>
+        </div>
+        <div class="tbl-wrap">
+            <table class="dtable">
+                <thead>
+                    <tr>
+                        <th>Ticket ID</th>
+                        <th>Subject</th>
+                        <th th:if="${staff}">Requester</th>
+                        <th>Category</th>
+                        <th th:if="${staff}">Priority</th>
+                        <th>Date submitted</th>
+                        <th>Status</th>
+                        <th th:if="${staff}">Assigned to</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="t : ${items}" th:attr="data-status=${t.status.name()}">
+                        <td><span class="t-id" th:text="${t.ticketCode}">TCK-0001</span></td>
+                        <td class="t-subject" th:text="${t.subject}">Subject</td>
+                        <td th:if="${staff}" th:text="${t.requesterLabel}">Requester</td>
+                        <td th:text="${t.categoryLabel}">Hardware</td>
+                        <td th:if="${staff}"><span class="chip" th:classappend="'pr-' + ${t.priorityKey}" th:text="${t.priorityLabel}">High</span></td>
+                        <td th:text="${t.createdShort}">Oct 1, 2026</td>
+                        <td><span class="chip" th:classappend="'st-' + ${t.statusKey}" th:text="${t.statusLabel}">Open</span></td>
+                        <td th:if="${staff}" th:text="${t.assigneeLabel}">Unassigned</td>
+                        <td><a class="link-view" th:href="@{/tickets/{id}(id=${t.id})}">View</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="m-empty" data-inline-none hidden>There are no tickets in this status.</p>
+        <div class="dt-foot" data-inline-foot hidden><span data-inline-info></span><a class="link-view" data-inline-more href="/tickets">View all</a></div>
+    </div>
+</section>
+
+</body>
+</html>

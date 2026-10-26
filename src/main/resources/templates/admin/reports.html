@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reports')}"></head>
+<body class="app">
+<div th:replace="~{fragments/layout :: bg}"></div>
+<div th:replace="~{fragments/layout :: toast}"></div>
+<div class="shell">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="page">
+        <header th:replace="~{fragments/layout :: topbar('Reports', 'Detailed ticket and team performance data.')}"></header>
+
+        <section class="stat-grid">
+            <div class="kpi-box"><b th:text="${total}">0</b><span>Total tickets</span></div>
+            <div class="kpi-box"><b th:text="${rate} + '%'">0%</b><span>Resolved or closed</span></div>
+            <div class="kpi-box"><b th:text="${avgHours}">0</b><span>Average hours</span></div>
+            <div class="kpi-box"><b th:text="${firstResponse}">0</b><span>Minutes to first reply</span></div>
+        </section>
+
+        <section class="card flush gap-top">
+            <div class="card-head"><div><h3>Agent workload</h3><small>Tickets handled by each agent.</small></div></div>
+            <div class="tbl-wrap">
+                <table class="tbl">
+                    <thead><tr><th>Agent</th><th>Active tickets</th><th>Resolved</th><th>Average resolution</th></tr></thead>
+                    <tbody>
+                        <tr th:each="r : ${perf}">
+                            <td><b th:text="${r.agent.fullName}">Agent</b></td>
+                            <td th:text="${r.active}">0</td>
+                            <td th:text="${r.resolved}">0</td>
+                            <td th:text="${r.avgHours > 0 ? r.avgHours + ' hrs' : '-'}">-</td>
+                        </tr>
+                        <tr>
+                            <td><b>Unassigned</b></td>
+                            <td th:text="${unassigned}">0</td>
+                            <td>0</td>
+                            <td>-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card flush gap-top">
+            <div class="card-head"><div><h3>Recurring bottlenecks by category</h3><small>Sorted by volume.</small></div></div>
+            <div class="tbl-wrap">
+                <table class="tbl">
+                    <thead><tr><th>Category</th><th>Share of all tickets</th><th>Tickets</th><th>Still active</th><th>Past target</th><th>Avg hours</th></tr></thead>
+                    <tbody>
+                        <tr th:each="c : ${cats}">
+                            <td><b th:text="${c.category}">Hardware</b></td>
+                            <td><div class="cell-bar"><div class="hb-track"><i th:attr="data-w=${c.share}"></i></div><span th:text="${c.share} + '%'">0%</span></div></td>
+                            <td th:text="${c.total}">0</td>
+                            <td th:text="${c.active}">0</td>
+                            <td><span class="chip pr-high" th:if="${c.overdue > 0}" th:text="${c.overdue}">1</span><span th:if="${c.overdue == 0}">0</span></td>
+                            <td th:text="${c.avgHours}">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card flush gap-top">
+            <div class="card-head"><div><h3>Customer satisfaction</h3><small th:text="${rating.count} + ' ratings, average ' + ${rating.avg} + ' / 5'">0 ratings</small></div></div>
+            <div class="pf-body">
+                <div class="hbars">
+                    <div class="hb-row" th:each="e : ${rating.dist}" style="--c:var(--cyan)">
+                        <span th:text="${e.key}">5 stars</span>
+                        <div class="hb-track"><i th:attr="data-w=${rating.count == 0 ? 0 : e.value * 100 / rating.count}"></i></div>
+                        <b th:text="${e.value}">0</b>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="dt gap-top" data-dt data-status="">
+            <section class="card flush">
+                <div class="card-head">
+                    <div><h3>Ticket performance data</h3><small data-dt-count>0 tickets</small></div>
+                    <div class="dt-head-actions">
+                        <input class="input dt-search" type="search" data-dt-search placeholder="Search ticket, ID, or requester" aria-label="Search tickets" autocomplete="off">
+                        <a href="/admin/reports/export.csv" download class="btn tint"><i class="fa-solid fa-file-arrow-down"></i>Download CSV</a>
+                    </div>
+                </div>
+                <div class="tbl-wrap"><div th:replace="~{fragments/table :: tickets(${tickets}, true)}"></div></div>
+                <p class="m-empty" data-dt-empty hidden>No tickets match your search.</p>
+                <div class="dt-foot"><span data-dt-info></span><div class="dt-pager" data-dt-pager></div></div>
+            </section>
+        </div>
+    </main>
+</div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Track a ticket')}"></head>
+<body class="pub">
+<div th:replace="~{fragments/layout :: bg}"></div>
+<header th:replace="~{fragments/public :: nav('track')}"></header>
+
+<main class="pub-main">
+    <div class="wrap">
+        <div class="track-page">
+            <h1>Track a ticket</h1>
+            <p class="muted" style="margin-bottom:24px">Enter the number you were given when you submitted it.</p>
+
+            <form class="track-inline" style="max-width:none" action="/track" method="get">
+                <input class="input" name="code" th:value="${code}" placeholder="TCK-0042" aria-label="Ticket number" autocomplete="off" required>
+                <button class="btn primary" type="submit"><i class="fa-solid fa-magnifying-glass"></i>Track</button>
+            </form>
+
+            <section class="card track-result" th:if="${notFound}">
+                <div class="empty">
+                    <i class="fa-regular fa-circle-question"></i>
+                    <h4>We could not find that ticket</h4>
+                    <p>Check the number and try again. It looks like TCK-0042.</p>
+                </div>
+            </section>
+
+            <section class="card track-result" th:if="${ticket != null}">
+                <div class="card-head">
+                    <h3 th:text="${ticket.ticketCode}">TCK-0001</h3>
+                    <span class="chip" th:classappend="'st-' + ${ticket.statusKey}" th:text="${ticket.statusLabel}">Open</span>
+                </div>
+                <div th:replace="~{fragments/ticket :: track(${ticket})}"></div>
+                <dl class="track-meta">
+                    <div><dt>Category</dt><dd th:text="${ticket.categoryLabel}">Hardware</dd></div>
+                    <div><dt>Priority</dt><dd th:text="${ticket.priorityLabel}">High</dd></div>
+                    <div><dt>Opened</dt><dd th:text="${ticket.createdLabel}">Date</dd></div>
+                    <div><dt>Last update</dt><dd th:text="${ticket.updatedAgo}">now</dd></div>
+                    <div><dt>Handled by</dt><dd th:text="${ticket.assignedTo != null} ? ${ticket.assignedTo.firstName} : 'Waiting for an agent'">Agent</dd></div>
+                    <div><dt>Submitted via</dt><dd th:text="${ticket.sourceLabel}">Kiosk</dd></div>
+                </dl>
+                <p class="hint" style="margin-top:22px"><i class="fa-solid fa-lock"></i> For privacy, the subject and conversation are only visible after you <a href="/login" style="color:var(--brand);font-weight:600">log in</a>.</p>
+            </section>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/public :: footer}"></footer>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

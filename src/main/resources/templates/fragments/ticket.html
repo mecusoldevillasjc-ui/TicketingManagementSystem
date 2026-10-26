@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- One ticket as a clickable row -->
+<a th:fragment="row(t)" class="tk-row" th:href="@{/tickets/{id}(id=${t.id})}"
+   th:attr="data-search=${(t.ticketCode + ' ' + t.subject + ' ' + t.requesterLabel + ' ' + t.categoryLabel).toLowerCase()}">
+    <span class="tk-ico"><i class="fa-solid" th:classappend="${t.categoryIcon}"></i></span>
+    <span class="tk-main">
+        <b th:text="${t.subject}">Subject</b>
+        <small>
+            <span th:text="${t.ticketCode}">TCK-0001</span>
+            <span th:text="${t.requesterLabel}">Requester</span>
+            <span th:if="${t.kiosk}"><i class="fa-solid fa-display"></i> Kiosk</span>
+            <span th:text="${t.ago}">1h ago</span>
+        </small>
+    </span>
+    <span class="tk-tags">
+        <span class="chip warn" th:if="${t.overdue}"><i class="fa-solid fa-clock"></i>Overdue</span>
+        <span class="chip" th:classappend="'pr-' + ${t.priorityKey}" th:text="${t.priorityLabel}">High</span>
+        <span class="chip" th:classappend="'st-' + ${t.statusKey}" th:text="${t.statusLabel}">Open</span>
+    </span>
+    <span class="avatar sm" th:if="${t.assignedTo != null}" th:text="${t.assignedTo.initials}" th:title="${t.assignedTo.fullName}">AG</span>
+    <span class="avatar sm empty" th:if="${t.assignedTo == null}" title="Not assigned yet"><i class="fa-regular fa-user"></i></span>
+</a>
+
+<!-- Animated 4-step status tracker -->
+<div th:fragment="track(t)" class="track" th:style="'--p:' + ${(t.step - 1) * 33.333} + '%'">
+    <div class="track-line"><i></i></div>
+    <div class="step" th:each="s, it : ${statuses}"
+         th:classappend="${(it.count <= t.step ? 'done ' : '') + (it.count == t.step ? 'current' : '')}">
+        <span class="dot"><i class="fa-solid fa-check"></i></span>
+        <span th:text="${s.label}">Open</span>
+    </div>
+</div>
+
+</body>
+</html>

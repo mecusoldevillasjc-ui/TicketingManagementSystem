@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Ticket sent')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: bg}"></div>
+<div class="kiosk pub-main">
+    <div class="k-top">
+        <a class="brand" href="/kiosk">
+            <img class="brand-logo" src="/img/logo-mark.png" alt="Ticketing Management System logo">
+            <span class="brand-name">Ticketing Management System</span>
+        </a>
+    </div>
+    <div class="k-stage">
+        <div class="k-card center">
+            <div class="ok-ring"><i class="fa-solid fa-check"></i></div>
+            <h2 style="font-size:clamp(28px,4vw,42px);letter-spacing:-.8px">Thank you, your ticket is in.</h2>
+            <p class="muted" style="font-size:19px;margin-top:10px">Please remember your ticket number:</p>
+            <div class="code-big" th:text="${code}">TCK-0001</div>
+            <p class="muted" style="font-size:17px">You can check its progress any time with this number.</p>
+            <div class="row" style="justify-content:center;margin-top:30px">
+                <a class="btn xl" th:href="@{/track(code=${code})}"><i class="fa-solid fa-magnifying-glass"></i>Track this ticket</a>
+                <a class="btn primary xl" href="/kiosk"><i class="fa-solid fa-plus"></i>Report another problem</a>
+            </div>
+            <p class="hint" style="margin-top:26px">Returning to the start in <b id="countdown">30</b> seconds</p>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

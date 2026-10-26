@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create account - Ticketing Management System</title>
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <main class="auth-container">
+        <section class="auth-left">
+            <a class="brand" href="/">
+                <img class="brand-logo" src="/img/logo-mark.png" alt="Ticketing Management System logo">
+                <span class="brand-name">Ticketing Management System</span>
+            </a>
+
+            <div class="auth-header">
+                <h1>Create your account</h1>
+                <p>Sign up as a client to submit and follow your own support tickets.</p>
+            </div>
+
+            <div th:if="${error}" class="error-alert" role="alert">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span th:text="${error}"></span>
+            </div>
+
+            <form th:action="@{/register}" method="post">
+                <div class="input-field">
+                    <input type="text" name="fullName" placeholder="Full name" required maxlength="80" autocomplete="name" th:value="${fullName}">
+                    <i class="fa-regular fa-user"></i>
+                </div>
+                <div class="input-field">
+                    <input type="email" name="email" placeholder="Email address" required autocomplete="username" th:value="${email}">
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+                <div class="input-field">
+                    <input type="password" name="password" placeholder="Password (at least 6 characters)" required minlength="6" autocomplete="new-password">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <div class="input-field">
+                    <input type="password" name="confirm" placeholder="Repeat password" required minlength="6" autocomplete="new-password">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <button type="submit" class="btn-submit">Create account</button>
+            </form>
+
+            <p class="auth-alt">Already registered? <a href="/login">Log in</a></p>
+            <a class="back-home" href="/"><i class="fa-solid fa-arrow-left"></i> Back to homepage</a>
+        </section>
+
+        <section class="auth-right" aria-hidden="true">
+            <div class="glass-panel">
+                <div class="panel-head">
+                    <div><h3>How it works</h3><small>From problem to solution</small></div>
+                </div>
+                <div class="ticket t-1"><i class="fa-solid fa-pen-to-square"></i><div><b>1. Describe the problem</b><small>Pick a category and how urgent it is</small></div></div>
+                <div class="ticket t-2"><i class="fa-solid fa-user-check"></i><div><b>2. An agent takes it</b><small>Urgent tickets are handled first</small></div></div>
+                <div class="ticket t-3"><i class="fa-solid fa-circle-check"></i><div><b>3. Follow it to the end</b><small>Reply, track progress, then rate it</small></div></div>
+                <p class="steps-note">Staff accounts are created by an administrator.</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.querySelectorAll('a[href="/login"], a[href="/"]').forEach(a => a.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelector('.auth-container').classList.add('leaving');
+            setTimeout(() => { location.href = a.href; }, 220);
+        }));
+        addEventListener('pageshow', () => document.querySelector('.auth-container').classList.remove('leaving'));
+    </script>
+</body>
+</html>

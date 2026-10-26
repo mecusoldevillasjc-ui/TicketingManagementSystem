@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Kiosk')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: bg}"></div>
+<div th:replace="~{fragments/layout :: toast}"></div>
+<div class="kiosk pub-main">
+    <div class="k-top">
+        <a class="brand" href="/">
+            <img class="brand-logo" src="/img/logo-mark.png" alt="Ticketing Management System logo">
+            <span class="brand-name">Ticketing Management System</span>
+        </a>
+        <div class="row">
+            <a class="btn" href="/track"><i class="fa-solid fa-magnifying-glass"></i>Track a ticket</a>
+            <button type="button" class="icon-btn" id="themeToggle" aria-label="Switch light or dark theme"><i class="fa-solid fa-moon"></i></button>
+        </div>
+    </div>
+
+    <div class="k-stage">
+        <div class="k-card">
+            <div class="k-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+            <form id="kioskForm" th:action="@{/kiosk}" method="post" autocomplete="off">
+                <input class="hp" type="text" name="website" tabindex="-1" aria-hidden="true">
+
+                <!-- 1 -->
+                <section class="k-step">
+                    <h2>How can we help you?</h2>
+                    <p>Touch the one that fits best.</p>
+                    <div class="k-tiles">
+                        <label class="tile" th:each="c : ${categories}">
+                            <input type="radio" name="category" th:value="${c.name()}">
+                            <span class="tile-body"><i class="fa-solid" th:classappend="${c.icon}"></i><span th:text="${c.label}">Category</span></span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- 2 -->
+                <section class="k-step">
+                    <h2>How urgent is it?</h2>
+                    <p>This helps us decide who to help first.</p>
+                    <div class="k-tiles">
+                        <label class="tile pr-low"><input type="radio" name="priority" value="LOW"><span class="tile-body"><i class="fa-solid fa-hourglass-half"></i>Low<small>It can wait</small></span></label>
+                        <label class="tile pr-medium"><input type="radio" name="priority" value="MEDIUM"><span class="tile-body"><i class="fa-solid fa-gauge"></i>Medium<small>It slows me down</small></span></label>
+                        <label class="tile pr-high"><input type="radio" name="priority" value="HIGH"><span class="tile-body"><i class="fa-solid fa-bolt"></i>High<small>I cannot work</small></span></label>
+                    </div>
+                </section>
+
+                <!-- 3 -->
+                <section class="k-step">
+                    <h2>What happened?</h2>
+                    <p>A few words are enough.</p>
+                    <div class="k-field"><label for="ksubject">Short title</label>
+                        <input class="k-input" id="ksubject" name="subject" maxlength="120" placeholder="Example: Projector will not turn on"></div>
+                    <div class="k-field"><label for="kdesc">Details</label>
+                        <textarea class="k-input" id="kdesc" name="description" maxlength="2000" placeholder="Where are you, and what did you see?"></textarea></div>
+                </section>
+
+                <!-- 4 -->
+                <section class="k-step">
+                    <h2>Who should we help?</h2>
+                    <p>So the agent knows who to find.</p>
+                    <div class="k-field"><label for="kname">Your name</label>
+                        <input class="k-input" id="kname" name="visitorName" maxlength="80" placeholder="Full name"></div>
+                    <div class="k-field"><label for="kcontact">Phone, email or room (optional)</label>
+                        <input class="k-input" id="kcontact" name="contact" maxlength="120" placeholder="Where can we reach you?"></div>
+                </section>
+
+                <p class="k-error" id="kErr" role="alert"></p>
+
+                <div class="k-actions">
+                    <button type="button" class="btn xl" data-back><i class="fa-solid fa-arrow-left"></i>Back</button>
+                    <button type="button" class="btn primary xl" data-next>Next<i class="fa-solid fa-arrow-right"></i></button>
+                    <button type="submit" class="btn primary xl" data-submit><i class="fa-solid fa-paper-plane"></i>Send my ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script>
+    // show only the buttons that belong to the current step
+    (() => {
+        const kf = document.getElementById('kioskForm');
+        const steps = [...kf.querySelectorAll('.k-step')];
+        const back = kf.querySelector('[data-back]'), next = kf.querySelector('[data-next]'), send = kf.querySelector('[data-submit]');
+        const sync = () => {
+            const i = steps.findIndex(s => s.classList.contains('active'));
+            back.style.visibility = i > 0 ? 'visible' : 'hidden';
+            next.style.display = i < steps.length - 1 ? '' : 'none';
+            send.style.display = i === steps.length - 1 ? '' : 'none';
+        };
+        new MutationObserver(sync).observe(kf, { subtree: true, attributes: true, attributeFilter: ['class'] });
+        sync();
+    })();
+</script>
+</body>
+</html>

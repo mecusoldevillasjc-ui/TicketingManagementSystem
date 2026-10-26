@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tickets')}"></head>
+<body class="app" th:attr="data-idle=${me.client ? 300 : 0}">
+<div th:replace="~{fragments/layout :: bg}"></div>
+<div th:replace="~{fragments/layout :: toast}"></div>
+<div class="shell">
+    <aside th:replace="~{fragments/layout :: sidebar}"></aside>
+    <main class="page">
+        <header th:replace="~{fragments/layout :: topbar(${me.client ? 'My tickets' : (me.admin ? 'All tickets' : 'Ticket queue')}, 'Open tickets are shown first so urgent work is easy to find.')}"></header>
+
+        <div class="dt" data-dt th:attr="data-status=${fStatus}">
+            <div class="dt-tools">
+                <input class="input dt-search" type="search" data-dt-search placeholder="Search ticket, ID, or requester" aria-label="Search tickets" autocomplete="off">
+                <div class="fbtns" role="group" aria-label="Filter by status">
+                    <button type="button" class="fbtn" data-dt-status="">All</button>
+                    <button type="button" class="fbtn" th:each="s : ${statuses}" th:attr="data-dt-status=${s.name()}" th:text="${s.label}">Open</button>
+                </div>
+            </div>
+
+            <section class="card flush">
+                <div class="card-head">
+                    <div><h3 data-dt-title>Open tickets</h3><small data-dt-count>0 tickets</small></div>
+                </div>
+                <div class="tbl-wrap"><div th:replace="~{fragments/table :: tickets(${tickets}, ${!me.client})}"></div></div>
+                <p class="m-empty" data-dt-empty hidden>No tickets match your search.</p>
+                <div class="dt-foot"><span data-dt-info></span><div class="dt-pager" data-dt-pager></div></div>
+            </section>
+        </div>
+    </main>
+</div>
+<th:block th:if="${me.client}"><div th:replace="~{fragments/modals :: submitTicket}"></div></th:block>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+</body>
+</html>

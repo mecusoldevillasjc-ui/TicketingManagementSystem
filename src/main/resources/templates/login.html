@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in - Ticketing Management System</title>
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <main class="auth-container">
+
+        <!-- Left: Login form -->
+        <section class="auth-left">
+            <a class="brand" href="/">
+                <img class="brand-logo" src="/img/logo-mark.png" alt="Ticketing Management System logo">
+                <span class="brand-name">Ticketing Management System</span>
+            </a>
+
+            <div class="auth-header">
+                <h1>Welcome back</h1>
+                <p>Sign in to submit, assign and track support tickets.</p>
+            </div>
+
+            <div th:if="${param.error != null}" class="error-alert" role="alert">
+                <i class="fa-solid fa-circle-exclamation"></i><span>Invalid email or password.</span>
+            </div>
+            <div th:if="${param.disabled != null}" class="error-alert" role="alert">
+                <i class="fa-solid fa-ban"></i><span>This account is deactivated. Please contact an administrator.</span>
+            </div>
+            <div th:if="${param.logout != null}" class="success-alert" role="status">
+                <i class="fa-solid fa-circle-check"></i><span>You have been signed out.</span>
+            </div>
+            <div th:if="${success}" class="success-alert" role="status">
+                <i class="fa-solid fa-circle-check"></i><span th:text="${success}"></span>
+            </div>
+
+            <!-- th:action adds the hidden CSRF token that Spring Security requires -->
+            <form th:action="@{/login}" method="post">
+                <div class="input-field">
+                    <input type="email" name="email" id="email" placeholder="Email address" required autocomplete="username">
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+
+                <div class="input-field">
+                    <input type="password" name="password" id="password" placeholder="Password" required autocomplete="current-password">
+                    <i class="fa-solid fa-lock"></i>
+                    <button type="button" class="toggle-pass" id="togglePass" aria-label="Show password">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+
+                <button type="submit" class="btn-submit">Sign in</button>
+            </form>
+
+            <p class="auth-alt">New here? <a href="/register">Create a client account</a></p>
+            <a class="back-home" href="/"><i class="fa-solid fa-arrow-left"></i> Back to homepage</a>
+            <p class="auth-foot"><i class="fa-solid fa-shield-halved"></i> Access is limited to registered users and support staff.</p>
+        </section>
+
+        <!-- Right: real totals from the database -->
+        <section class="auth-right" aria-hidden="true">
+            <div class="glass-panel">
+                <div class="panel-head">
+                    <div>
+                        <h3>Ticket queue</h3>
+                        <small>Current totals</small>
+                    </div>
+                    <span class="live"><i></i>Live</span>
+                </div>
+
+                <div class="stats">
+                    <div class="stat s-open"><b th:attr="data-count=${counts['Open']}">0</b><span>Open</span></div>
+                    <div class="stat s-prog"><b th:attr="data-count=${counts['In Progress']}">0</b><span>In Progress</span></div>
+                    <div class="stat s-res"><b th:attr="data-count=${counts['Resolved']}">0</b><span>Resolved</span></div>
+                    <div class="stat s-closed"><b th:attr="data-count=${counts['Closed']}">0</b><span>Closed</span></div>
+                </div>
+
+                <div class="chart">
+                    <span style="--h:45%;--d:0s"></span>
+                    <span style="--h:70%;--d:.1s"></span>
+                    <span style="--h:55%;--d:.2s"></span>
+                    <span style="--h:88%;--d:.3s"></span>
+                    <span style="--h:64%;--d:.4s"></span>
+                    <span style="--h:96%;--d:.5s"></span>
+                    <span style="--h:72%;--d:.6s"></span>
+                </div>
+
+                <div class="ticket t-1">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div><b>Printer offline, Room 204</b><small>Example: High priority, Open</small></div>
+                </div>
+                <div class="ticket t-2">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div><b>Wi-Fi reset request</b><small>Example: Low priority, Resolved</small></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Show / hide password
+        const pass = document.getElementById('password');
+        document.getElementById('togglePass').addEventListener('click', function () {
+            const show = pass.type === 'password';
+            pass.type = show ? 'text' : 'password';
+            this.innerHTML = show ? '<i class="fa-regular fa-eye-slash"></i>' : '<i class="fa-regular fa-eye"></i>';
+            this.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+        });
+
+        // Smooth exit when moving to another page
+        document.querySelectorAll('a[href="/register"], a[href="/"]').forEach(a => a.addEventListener('click', e => {
+            e.preventDefault();
+            document.querySelector('.auth-container').classList.add('leaving');
+            setTimeout(() => { location.href = a.href; }, 220);
+        }));
+        addEventListener('pageshow', () => document.querySelector('.auth-container').classList.remove('leaving'));
+
+        // Count-up for the queue numbers
+        document.querySelectorAll('[data-count]').forEach(el => {
+            const target = +el.dataset.count, start = performance.now(), dur = 1400;
+            (function tick(now) {
+                const p = Math.min((now - start) / dur, 1);
+                el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+                if (p < 1) requestAnimationFrame(tick);
+            })(start);
+        });
+    </script>
+</body>
+</html>
